@@ -1,4 +1,5 @@
-from fastapi import FastAPI, File, UploadFile, Form
+import gc
+from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import HTMLResponse
 from manga_ocr import MangaOcr
 from PIL import Image
@@ -22,8 +23,10 @@ async def home():
 @app.post("/")
 async def get_text(image: UploadFile = File(...)):
     mocr = MangaOcr()
-    img = Image.open(BytesIO(await image.read()))
-    text = mocr(img)
+    with Image.open(BytesIO(await image.read())) as img:
+        text = mocr(img)
+    del mocr
+    gc.collect()
     return HTMLResponse(f"""
         <html>
             <body>
@@ -32,4 +35,3 @@ async def get_text(image: UploadFile = File(...)):
             </body>
         </html>
     """)
-
