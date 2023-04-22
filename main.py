@@ -1,12 +1,35 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Form
+from fastapi.responses import HTMLResponse
 from manga_ocr import MangaOcr
-import PIL.Image
+from PIL import Image
+from io import BytesIO
 
 app = FastAPI()
 
-@app.post("/get_text")
+@app.get("/")
+async def home():
+    return HTMLResponse("""
+        <html>
+            <body>
+                <form method="post" enctype="multipart/form-data">
+                    <input type="file" name="image" accept="image/*">
+                    <button type="submit">Extract text</button>
+                </form>
+            </body>
+        </html>
+    """)
+
+@app.post("/")
 async def get_text(image: UploadFile = File(...)):
     mocr = MangaOcr()
-    img = PIL.Image.open(image.file)
+    img = Image.open(BytesIO(await image.read()))
     text = mocr(img)
-    return {"text": text}
+    return HTMLResponse(f"""
+        <html>
+            <body>
+                <p>Extracted text:</p>
+                <pre>{text}</pre>
+            </body>
+        </html>
+    """)
+
