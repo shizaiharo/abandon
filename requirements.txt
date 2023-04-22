@@ -1,3 +1,6 @@
+io
+PIL
 fastapi
 uvicorn[standard]
 manga-ocr
+python-multipart
