@@ -1,2 +1,4 @@
-flask
+python==3.9.13
+fastapi
+uvicorn[standard]
 manga-ocr

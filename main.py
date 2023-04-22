@@ -1,29 +1,12 @@
-from flask import Flask, request
-
-import PIL.Image
+from fastapi import FastAPI, File, UploadFile
 from manga_ocr import MangaOcr
+import PIL.Image
 
-app = Flask(__name__)
-mocr = MangaOcr()
+app = FastAPI()
 
-@app.route('/ocr', methods=['POST'])
-def ocr():
-    # Get the uploaded image from the request
-    image = request.files['image']
-
-    # Save the image to a temporary file
-    image_path = 'temp.jpg'
-    image.save(image_path)
-
-    # Use MangaOcr to extract text from the image
-    img = PIL.Image.open(image_path)
+@app.post("/get_text")
+async def get_text(image: UploadFile = File(...)):
+    mocr = MangaOcr()
+    img = PIL.Image.open(image.file)
     text = mocr(img)
-
-    # Delete the temporary file
-    os.remove(image_path)
-
-    # Return the extracted text
-    return text
-
-if __name__ == '__main__':
-    app.run()
+    return {"text": text}
