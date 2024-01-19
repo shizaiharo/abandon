@@ -1,5 +1,9 @@
-
-fastapi
-uvicorn[standard]
+keras
+numpy
+selenium
+Werkzeug
 manga-ocr
-python-multipart
+tensorflow
+googletrans
+pytesseract
+Pillow==9.5.0
